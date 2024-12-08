@@ -1,0 +1,98 @@
+<div style="text-align: center; padding: 20px;">
+  <!-- Time Range Selector -->
+  <div style="margin-bottom: 20px; text-align: center;">
+    <label for="timeRange">Select Time Range: </label>
+    <select id="timeRange" (change)="onTimeRangeChange($event)" >
+      <option value="1">1 Hour</option>
+      <option value="2">2 Hours</option>
+      <option value="5">5 Hours</option>
+      <option value="12">12 Hours</option>
+      <option value="24">1 Day</option>
+      <option value="168">1 Week</option>
+    </select>
+  </div>
+
+  <!-- CO2 Levels Graph -->
+  <h2>CO2 Levels</h2>
+  <div class="chart-container">
+    <canvas
+      baseChart
+      [data]="co2ChartData"
+      [options]="co2ChartOptions"
+      chartType="line"
+      width="1000"
+      height="200"
+    ></canvas>
+  </div>
+
+  <!-- Particle Levels Graph -->
+  <h2>Particle Levels</h2>
+  <div class="chart-container">
+    <canvas
+      baseChart
+      [data]="particleChartData"
+      [options]="particleChartOptions"
+      chartType="line"
+      width="1000"
+      height="200"
+    ></canvas>
+  </div>
+
+  <!-- Temperature Levels Graph -->
+  <h2>Temperature</h2>
+  <div class="chart-container">
+    <canvas
+      baseChart
+      [data]="tempChartData"
+      [options]="tempChartOptions"
+      chartType="line"
+      width="1000"
+      height="200"
+    ></canvas>
+  </div>
+
+  <!-- Humidity Levels Graph -->
+  <h2>Humidity</h2>
+  <div class="chart-container">
+    <canvas
+      baseChart
+      [data]="humidityChartData"
+      [options]="humidityChartOptions"
+      chartType="line"
+      width="1000"
+      height="200"
+    ></canvas>
+  </div>
+
+  <!-- Toggle Button -->
+  <button (click)="toggleTableVisibility()" style="margin: 20px; padding: 10px 20px; font-size: 16px;">
+    {{ showTable ? 'Hide Data Table' : 'Show Data Table' }}
+  </button>
+
+  <!-- Table for displaying raw data -->
+  <div *ngIf="showTable">
+    <h2 style="margin-top: 20px;">Raw Data</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Timestamp</th>
+          <th>CO2</th>
+          <th>Particle 24</th>
+          <th>Particle 10</th>
+          <th>Temperature</th>
+          <th>Humidity</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let data of sensorData">
+          <td>{{ convertEpochToTime(data.timestamp) }}</td>
+          <td>{{ data.payload.co2 }}</td>
+          <td>{{ data.payload.particle24 }}</td>
+          <td>{{ data.payload.particle10 }}</td>
+          <td>{{ data.payload.SHT_Temp }}</td>
+          <td>{{ data.payload.SHT_RH }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
