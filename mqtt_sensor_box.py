@@ -40,11 +40,12 @@ class SensorKommunikation:
     def transmit(self):
         print("Transmitting")
         wakeup_command = 138
-        command = [wakeup_command, wakeup_command]
+        command = [wakeup_command, wakeup_command, wakeup_command, wakeup_command]
         self.UARTDriver1.uartWrite(command)
 
     def receive(self):
         print("Receiving")
+        time.sleep(5)
         data = self.UARTDriver1.uartRead()
         if data:
             print("Receiving done")
@@ -136,7 +137,7 @@ def main():
                 publish_to_aws(mqtt_connection, TOPIC, payload)
             else:
                 print("No valid sensor data to publish.")
-            time.sleep(20)  # Adjust the interval as needed
+            time.sleep(300)  # Adjust the interval as needed
     except KeyboardInterrupt:
         print("Disconnecting...")
     finally:
