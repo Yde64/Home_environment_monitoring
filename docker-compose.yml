@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./Backend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./Backend:/app # Optional: live updates
+    environment:
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=${AWS_REGION}
+      - DYNAMODB_TABLE_NAME=${DYNAMODB_TABLE_NAME}
+    env_file:
+      - .env  # Load environment variables from .env file
+
+  frontend:
+    build:
+      context: ./Frontend/sensor-dashboard
+    ports:
+      - "4200:4200"
+    volumes:
+      - ./Frontend/sensor-dashboard:/app # Optional: live updates
+    environment:
+      - NODE_ENV=development
