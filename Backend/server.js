@@ -2,13 +2,20 @@ const express = require("express");
 const cors = require("cors");
 const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
 const { DynamoDBDocumentClient, ScanCommand, PutCommand } = require("@aws-sdk/lib-dynamodb");
+require('dotenv').config({ path: '../.env' });
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
 // Configure DynamoDB Client
-const ddbClient = new DynamoDBClient({ region: "eu-north-1" }); // Set your region
+const ddbClient = new DynamoDBClient({ 
+  region: process.env.AWS_REGION || "eu-north-1",
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  },
+ });
 const ddbDocClient = DynamoDBDocumentClient.from(ddbClient); // Document Client for convenience
 
 const tableName = "SensorData";
