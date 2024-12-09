@@ -4,16 +4,16 @@
     }
 }
 
-.background {
-    position: fixed;
-    width: 100vw;
-    height: 100vh;
-    top: 0;
-    left: 0;
-    background: white;
-    overflow: hidden;
-    z-index: -1; /* This ensures the background stays below other content */
+/* Ensure body and html can grow */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: auto; /* Allow content to extend beyond the screen */
+  overflow-x: hidden; /* Disable horizontal scrolling */
+  overflow-y: auto; /* Enable vertical scrolling */
 }
+
+/* Add any other global styling here */
 
 .background span {
     width: 1vmin;
@@ -253,7 +253,7 @@ p {
 }
 
 .inner-header {
-  height:20vh;
+  height:15vh;
   width:100%;
   margin: 0;
   padding: 0;

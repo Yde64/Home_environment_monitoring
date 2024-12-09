@@ -1,7 +1,11 @@
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NgChartsModule } from 'ng2-charts';
+import { BaseChartDirective, NgChartsModule } from 'ng2-charts';
 import { SensorService } from '../../services/sensor.service';
+import zoomPlugin from 'chartjs-plugin-zoom';
+import Chart from 'chart.js/auto';
+Chart.register(zoomPlugin);
+
 
 @Component({
   selector: 'app-sensor-data',
@@ -24,6 +28,20 @@ export class SensorDataComponent implements OnInit, AfterViewInit {
 
   showTable: boolean = false;
   timeRangeInHours: number = 1; // Default to 1 hour
+
+  co2ChartClass = 'within-threshold';
+  particleChartClass = 'within-threshold';
+  tempChartClass = 'within-threshold';
+  humidityChartClass = 'within-threshold';
+
+
+  readonly thresholds = {
+    co2: { max: 1000 },
+    particle: { max: 22 },
+    temperature: { min: 15, max: 26 },
+    humidity: { min: 25, max: 60 },
+  };
+  
 
   constructor(private sensorService: SensorService) {}
 
@@ -72,11 +90,38 @@ export class SensorDataComponent implements OnInit, AfterViewInit {
     this.updateChartData(filteredData);
   }
 
+  getMaxTicksLimit(): number {
+    if (this.timeRangeInHours <= 1) {
+      return 12; // For 1-hour range, show 6 ticks (e.g., every 10 minutes)
+    } else if (this.timeRangeInHours <= 5) {
+      return 12; // For up to 5 hours, show 10 ticks
+    } else if (this.timeRangeInHours <= 24) {
+      return 24; // For 24 hours, show hourly ticks
+    } else {
+      return 42; // For larger ranges, show 1 tick per day or week
+    }
+  }
+  
+
   updateChartData(filteredData: any[]): void {
     const timestamps = filteredData.map((data) =>
       this.convertEpochToTime(data.timestamp)
     );
 
+    const lastCO2 = filteredData[filteredData.length - 1]?.payload?.co2 || 0;
+    const lastParticle24 = filteredData[filteredData.length - 1]?.payload?.particle24 || 0;
+    const lastTemp = filteredData[filteredData.length - 1]?.payload?.SHT_Temp || 0;
+    const lastHumidity = filteredData[filteredData.length - 1]?.payload?.SHT_RH || 0;
+
+    // Determine classes for chart containers
+    this.co2ChartClass = lastCO2 > this.thresholds.co2.max ? 'out-of-threshold' : 'within-threshold';
+    this.particleChartClass = lastParticle24 > this.thresholds.particle.max ? 'out-of-threshold' : 'within-threshold';
+    this.tempChartClass = (lastTemp < this.thresholds.temperature.min || lastTemp > this.thresholds.temperature.max)
+      ? 'out-of-threshold' : 'within-threshold';
+    this.humidityChartClass = (lastHumidity < this.thresholds.humidity.min || lastHumidity > this.thresholds.humidity.max)
+      ? 'out-of-threshold' : 'within-threshold';
+
+      
     // CO2 Chart Data
     this.co2ChartData = {
       labels: timestamps,
@@ -99,6 +144,21 @@ export class SensorDataComponent implements OnInit, AfterViewInit {
           display: true,
           position: 'top',
         },
+        zoom: {
+          zoom: {
+            wheel: {
+              enabled: true, // Enable zooming with the mouse wheel
+            },
+            pinch: {
+              enabled: true, // Enable zooming with touch gestures
+            },
+            mode: 'x', // Allow zooming only along the x-axis (change to 'y' or 'xy' if needed)
+          },
+          pan: {
+            enabled: true, // Enable panning
+            mode: 'x', // Allow panning only along the x-axis (change to 'y' or 'xy' if needed)
+          },
+        },
       },
       scales: {
         x: {
@@ -107,6 +167,11 @@ export class SensorDataComponent implements OnInit, AfterViewInit {
             display: true,
             text: 'Time',
           },
+          ticks: {
+            autoSkip: true, // Automatically skip ticks to avoid crowding
+            maxTicksLimit: this.getMaxTicksLimit(), // Limit the number of ticks displayed
+          },
+          offset: false, // Align ticks directly with gridlines
         },
         y: {
           title: {
@@ -148,6 +213,21 @@ export class SensorDataComponent implements OnInit, AfterViewInit {
           display: true,
           position: 'top',
         },
+        zoom: {
+          zoom: {
+            wheel: {
+              enabled: true, // Enable zooming with the mouse wheel
+            },
+            pinch: {
+              enabled: true, // Enable zooming with touch gestures
+            },
+            mode: 'x', // Allow zooming only along the x-axis (change to 'y' or 'xy' if needed)
+          },
+          pan: {
+            enabled: true, // Enable panning
+            mode: 'x', // Allow panning only along the x-axis (change to 'y' or 'xy' if needed)
+          },
+        },
       },
       scales: {
         x: {
@@ -156,6 +236,11 @@ export class SensorDataComponent implements OnInit, AfterViewInit {
             display: true,
             text: 'Time',
           },
+          ticks: {
+            autoSkip: true, // Automatically skip ticks to avoid crowding
+            maxTicksLimit: this.getMaxTicksLimit(), // Limit the number of ticks displayed
+          },
+          offset: false, // Align ticks directly with gridlines
         },
         y: {
           title: {
@@ -189,6 +274,21 @@ export class SensorDataComponent implements OnInit, AfterViewInit {
           display: true,
           position: 'top',
         },
+        zoom: {
+          zoom: {
+            wheel: {
+              enabled: true, // Enable zooming with the mouse wheel
+            },
+            pinch: {
+              enabled: true, // Enable zooming with touch gestures
+            },
+            mode: 'x', // Allow zooming only along the x-axis (change to 'y' or 'xy' if needed)
+          },
+          pan: {
+            enabled: true, // Enable panning
+            mode: 'x', // Allow panning only along the x-axis (change to 'y' or 'xy' if needed)
+          },
+        },
       },
       scales: {
         x: {
@@ -197,6 +297,11 @@ export class SensorDataComponent implements OnInit, AfterViewInit {
             display: true,
             text: 'Time',
           },
+          ticks: {
+            autoSkip: true, // Automatically skip ticks to avoid crowding
+            maxTicksLimit: this.getMaxTicksLimit(), // Limit the number of ticks displayed
+          },
+          offset: false, // Align ticks directly with gridlines
         },
         y: {
           title: {
@@ -230,6 +335,21 @@ export class SensorDataComponent implements OnInit, AfterViewInit {
           display: true,
           position: 'top',
         },
+        zoom: {
+          zoom: {
+            wheel: {
+              enabled: true, // Enable zooming with the mouse wheel
+            },
+            pinch: {
+              enabled: true, // Enable zooming with touch gestures
+            },
+            mode: 'x', // Allow zooming only along the x-axis (change to 'y' or 'xy' if needed)
+          },
+          pan: {
+            enabled: true, // Enable panning
+            mode: 'x', // Allow panning only along the x-axis (change to 'y' or 'xy' if needed)
+          },
+        },
       },
       scales: {
         x: {
@@ -237,6 +357,10 @@ export class SensorDataComponent implements OnInit, AfterViewInit {
             beginAtZero: true,
             display: true,
             text: 'Time',
+          },
+          ticks: {
+            autoSkip: true, // Automatically skip ticks to avoid crowding
+            maxTicksLimit: this.getMaxTicksLimit(), // Limit the number of ticks displayed
           },
         },
         y: {
@@ -272,13 +396,24 @@ export class SensorDataComponent implements OnInit, AfterViewInit {
 
   convertEpochToTime(epoch: number): string {
     const date = new Date(epoch * 1000); // Convert seconds to milliseconds
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    if (this.timeRangeInHours > 24) {
+      // If the range is greater than 1 day, include the date
+      return date.toLocaleString([], {
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+    } else {
+      // For smaller ranges, show only the time
+      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
   }
-
+  
   toggleTableVisibility(): void {
     this.showTable = !this.showTable; // Toggle the boolean
   }
-
+  
   appendNewData(newData: any): void {
     this.sensorData.push(newData);
     this.sensorData.sort((a, b) => a.timestamp - b.timestamp); // Sort after adding new data

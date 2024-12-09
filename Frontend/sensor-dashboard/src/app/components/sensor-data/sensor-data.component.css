@@ -7,7 +7,6 @@ table {
   text-align: center;
 }
 
-
 th, td {
   border: 1px solid #ddd;
   padding: 8px;
@@ -17,31 +16,88 @@ th {
   font-weight: bold;
 }
 
-/* Chart Container Styles */
+.main-content {
+  width: 100%;
+  margin: 0 auto;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* General Chart Container Styles */
 .chart-container {
-  width: 60%; /* Container width */
-  margin: 0 auto 40px auto; /* Center the container */
-  height: auto; /* Let the canvas height dictate the container height */
+  position: relative;
+  width: 90%; /* Adjust width for most screens */
+  max-width: 1600px;
+  margin: 20px auto; /* Centered */
   background: rgba(236, 224, 240, 0.9);
+  border: 5px solid transparent; /* Default border */
+  transition: border-color 0.5s ease, box-shadow 0.5s ease; /* Smooth transition */
   border-radius: 10px;
   padding: 10px;
   box-sizing: border-box;
 }
 
-canvas {
-  width: 100%;
-  height: 100%;
+/* Within Threshold */
+.chart-container.within-threshold {
+  border-color: rgba(0, 161, 0, 0.5); /* Green border */
 }
 
+/* Out of Threshold */
+.chart-container.out-of-threshold {
+  border-color: rgba(192, 3, 3, 0.5); /* Red border */
+}
 
-/* Charts Grid */
+/* Canvas Scaling */
+canvas {
+  display: block; /* Fix scaling issues */
+  max-width: 100%;
+  height: auto; /* Maintain aspect ratio */
+}
 
-@media (max-width: 768px) {
-  .charts-grid > .chart-container {
-    flex: 1 1 100%; /* Take up the full width on small screens */
-    max-width: 100%;
+/* Responsive Styles for Tablets */
+@media (max-width: 1024px) {
+  .chart-container {
+    width: 95%; /* Use more width on tablets */
+    max-height: unset; /* Remove any height restriction */
   }
 }
+
+/* Responsive Styles for Phones */
+@media (max-width: 768px) {
+  .chart-container {
+    width: 100%; /* Full width on phones */
+    margin: 10px auto; /* Add some spacing */
+  }
+
+  canvas {
+    width: 100%; /* Ensure charts fill the container */
+    height: auto; /* Maintain aspect ratio */
+    display: block; /* Prevent inline-block spacing issues */
+  }
+}
+
+/* Allow Scrolling for Charts */
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+  overflow-y: auto; /* Enable vertical scrolling */
+}
+
+/* Special Adjustments for Small Phones */
+@media (max-width: 480px) {
+  .chart-container {
+    width: 100%; /* Full width */
+    margin: 10px auto; /* Add consistent spacing */
+  }
+
+  canvas {
+    width: 100%; /* Full container width */
+    height: auto; /* Maintain aspect ratio */
+    display: block; /* Prevent inline-block spacing issues */
+  }
+}
+
 
 
 
